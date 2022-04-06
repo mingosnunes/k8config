@@ -5,10 +5,13 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"k8config/models"
+	"k8config/utils"
 	"log"
 	"os"
 	"strings"
 
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
 )
 
@@ -20,15 +23,20 @@ var addCmd = &cobra.Command{
 
 Kubernetes configuratio file will be added to the list of available configs`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//check if config already exists
+		checks := utils.CheckInstallation()
 
-		//copy config to app's dir
-		appPath := os.Getenv("HOME") + "/.k8config/"
+		if len(checks) > 0 {
+			utils.PrintRed.Println("\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
+			os.Exit(1)
+		}
+
+		//copy config to configs' dir
 
 		srcSplit := strings.Split(args[0], "/")
+		fileName := srcSplit[len(srcSplit)-1]
 
 		src := args[0]
-		dest := appPath + srcSplit[len(srcSplit)-1]
+		// tempDest := utils.ConfigsPath + fileName
 
 		bytesRead, err := os.ReadFile(src)
 
@@ -36,13 +44,58 @@ Kubernetes configuratio file will be added to the list of available configs`,
 			log.Fatal(err)
 		}
 
-		err = os.WriteFile(dest, bytesRead, 0644)
+		settings := models.GetSettings()
 
-		if err != nil {
-			log.Fatal(err)
+		fileName2Save := ""
+		dest := ""
+		for {
+			prompt := &survey.Input{
+				Message: "Name to save:",
+				// Suggest: func (toComplete string) []string {
+				// 	files, _ := filepath.Glob(toComplete + "*")
+				// 	return files
+				// },
+				Default: fileName,
+			}
+			err := survey.AskOne(prompt, &fileName2Save)
+
+			if err != nil {
+
+				switch err.Error() {
+				case "interrupt":
+					utils.PrintWaring("Cancel by Mr. Noob")
+					os.Exit(0)
+				default:
+					log.Fatal(err)
+				}
+
+			}
+
+			dest = utils.ConfigsPath + "/" + fileName2Save
+
+			checkName := settings.CheckConfigName(fileName2Save)
+
+			if checkName {
+				err = os.WriteFile(dest, bytesRead, 0644)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				break
+			}
+
+			utils.PrintError("Noob, pay attention! We already have that config name 🙄\n")
+
+			fileName2Save = ""
+
 		}
 
-		println("😈 This configuration file is mine now!")
+		config := models.NewK8sConfig(fileName2Save, dest)
+
+		settings.AddConfig(config)
+
+		utils.PrintSuccess(" This configuration file is mine now! 😎")
 
 	},
 }

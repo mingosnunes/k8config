@@ -5,8 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"io/ioutil"
+	"k8config/utils"
 	"log"
 	"os"
 
@@ -17,18 +17,20 @@ import (
 // useCmd represents the use command
 var useCmd = &cobra.Command{
 	Use:   "use",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Change the active Kubernetes configuration file",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		basePath := os.Getenv("HOME") + "/.kube/configs"
+		checks := utils.CheckInstallation()
 
-		files, err := ioutil.ReadDir(basePath)
+		if len(checks) > 0 {
+			utils.PrintRed.Println("\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
+			os.Exit(1)
+		}
+
+		filesPath := os.Getenv("HOME") + "/.k8config/configs/"
+
+		files, err := ioutil.ReadDir(filesPath)
 
 		if err != nil {
 			log.Fatal(err)
@@ -48,7 +50,7 @@ to quickly create a Cobra application.`,
 
 		survey.AskOne(prompt, &config)
 
-		fmt.Println("Run this command: export KUBECONFIG=" + basePath + "/" + config)
+		// fmt.Println("Run this command: export KUBECONFIG=" + basePath + "/" + config)
 	},
 }
 

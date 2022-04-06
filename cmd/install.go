@@ -5,10 +5,10 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"k8config/models"
 	"k8config/utils"
 	"os"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -19,37 +19,39 @@ var installCmd = &cobra.Command{
 	Long: `Install k8config system files on your system.
 The system files will be localted on the $HOME/.k8config directory (created if not present).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		printRed := color.New(color.FgHiRed)
-		// printGreen := color.New(color.FgHiGreen)
-		printYellow := color.New(color.FgHiYellow)
 
 		homePath := os.Getenv("HOME")
 
-		dirInfo, err := os.Stat(homePath + "/.k8config")
+		checks := utils.CheckInstallation()
 
-		if err != nil {
-			printYellow.Println("$HOME/.k8config not found. Installing...")
-
-			os.Mkdir(homePath+"/.k8config", os.ModePerm)
-
-			utils.CreateSettings(homePath)
-
-			printYellow.Println("Installation Successful")
-
-		} else {
-			_, errSettings := os.Stat(homePath + "/.k8config/settings.json")
-
-			if dirInfo.IsDir() && errSettings == nil {
-				printRed.Println("Hey Noob. You already have everything installed!")
-			} else if errSettings != nil {
-				println("Settings file not found. Installing...")
-
-				utils.CreateSettings(homePath)
-
-				printYellow.Println("Installation Successful")
-			}
-
+		if len(checks) == 0 {
+			println("🤓 Hey Noob... You already have everything installed!")
+			return
 		}
+
+		for _, check := range checks {
+			switch check {
+			case 1:
+				utils.PrintInfo("Installing...")
+
+				os.Mkdir(homePath+"/.k8config", os.ModePerm)
+
+				models.CreateSettings()
+
+				os.Mkdir(homePath+"/.k8config/configs", os.ModePerm)
+
+			case 2:
+				utils.PrintInfo("Settings file not found. Installing...")
+
+				models.CreateSettings()
+			case 3:
+				utils.PrintInfo("Kubernetes configuration directory not found. Installing...")
+
+				os.Mkdir(homePath+"/.k8config/configs", os.ModePerm)
+			}
+		}
+
+		utils.PrintSuccess("Installation Successful")
 
 	},
 }
