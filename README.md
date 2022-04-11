@@ -188,7 +188,7 @@ Distributed under the GNU GENERAL PUBLIC LICENSE v3 License. See `LICENSE.txt` f
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@LinkedIn](https://www.linkedin.com/in/domingosfilipenunes/) - mingosnunes@gmail.com
+Domingos Nunes - [@LinkedIn](https://www.linkedin.com/in/domingosfilipenunes/) - mingosnunes@gmail.com
 
 <!-- Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name) -->
 
