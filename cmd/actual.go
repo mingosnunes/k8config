@@ -5,24 +5,38 @@ Copyright © 2022 Domingos Nunes mingosnunes94@gmail.com
 package cmd
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/mingosnunes/k8config/models"
+	"github.com/mingosnunes/k8config/utils"
 	"github.com/spf13/cobra"
 )
 
 // actualCmd represents the actual command
 var actualCmd = &cobra.Command{
 	Use:   "actual",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Show the active Kubernetes configuration file",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Actual kube config: " + os.Getenv("KUBECONFIG"))
+		checks := utils.CheckInstallation()
+
+		if len(checks) > 0 {
+			utils.PrintRed.Println("\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
+			os.Exit(1)
+		}
+
+		settings := models.GetSettings()
+
+		if settings.CurrentConfig.Name == "" {
+			if len(settings.ConfigList) > 0 {
+				utils.PrintWaring("Wake up Noob 🙄 You don't have any active config! Run `k8config use`")
+			} else {
+				utils.PrintWaring("Wake up Noob 🙄 You don't have any configs saved! Run `k8config add <config-path>`")
+			}
+
+		} else {
+			utils.PrintInfo("Actual kube config: " + settings.CurrentConfig.Name + " (" + settings.CurrentConfig.Location + ")")
+		}
 	},
 }
 
