@@ -5,6 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"k8config/models"
 	"k8config/utils"
 	"os"
@@ -30,13 +31,13 @@ Kubernetes configuratio file will be removed from your system`,
 
 		settings := models.GetSettings()
 
-		options := []string{"all"}
+		options := make([]string, 0)
 
 		for _, c := range settings.ConfigList {
 			options = append(options, c.Name)
 		}
 
-		configs2remove := ""
+		configs2remove := make([]string, 0)
 		prompt := &survey.MultiSelect{
 			Message: "Choose a kube config:",
 			Options: options,
@@ -44,11 +45,15 @@ Kubernetes configuratio file will be removed from your system`,
 
 		survey.AskOne(prompt, &configs2remove)
 
-		// for _, config := range configs2remove {
+		if len(configs2remove) == 0 {
+			fmt.Println()
+			utils.PrintWaring("No config selected... 🙄")
+			os.Exit(0)
+		}
 
-		// }
+		settings.DelConfigs(configs2remove)
 
-		// err := os.Remove()
+		utils.PrintSuccess("All configs removed")
 	},
 }
 

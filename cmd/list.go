@@ -5,21 +5,20 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"k8config/models"
 	"k8config/utils"
 	"os"
 
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
 )
 
-// useCmd represents the use command
-var useCmd = &cobra.Command{
-	Use:   "use",
-	Short: "Change the active Kubernetes configuration file",
+// listCmd represents the list command
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all available kubernetes configuration files",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		checks := utils.CheckInstallation()
 
 		if len(checks) > 0 {
@@ -29,36 +28,24 @@ var useCmd = &cobra.Command{
 
 		settings := models.GetSettings()
 
-		options := make([]string, 0)
+		utils.PrintInfo("Available Kubernetes configs:")
 
-		for _, c := range settings.ConfigList {
-			options = append(options, c.Name)
+		for _, config := range settings.ConfigList {
+			fmt.Println("\t" + config.Name + " (" + config.Location + ")")
 		}
-
-		config := ""
-		prompt := &survey.Select{
-			Message: "Choose a kube config:",
-			Options: options,
-		}
-
-		survey.AskOne(prompt, &config)
-
-		settings.UseConfig(config)
-
-		utils.PrintSuccess("All done!")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(useCmd)
+	rootCmd.AddCommand(listCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// useCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// useCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

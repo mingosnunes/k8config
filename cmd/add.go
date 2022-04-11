@@ -30,6 +30,11 @@ Kubernetes configuratio file will be added to the list of available configs`,
 			os.Exit(1)
 		}
 
+		if len(args) != 1 {
+			utils.PrintWaring("Add the config path as argument: k8config add <path>")
+			os.Exit(1)
+		}
+
 		//copy config to configs' dir
 
 		srcSplit := strings.Split(args[0], "/")
@@ -76,8 +81,8 @@ Kubernetes configuratio file will be added to the list of available configs`,
 			checkName := settings.CheckConfigName(fileName2Save)
 
 			if checkName {
+				// create config copy
 				err = os.WriteFile(dest, bytesRead, 0644)
-
 				if err != nil {
 					log.Fatal(err)
 				}

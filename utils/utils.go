@@ -31,5 +31,14 @@ func CheckInstallation() []int {
 		errorList = append(errorList, 3)
 	}
 
+	// check KUBECONFIG path
+	if os.Getenv("KUBECONFIG") != ActualConfigPath {
+		errorList = append(errorList, 4)
+	}
+
 	return errorList
+}
+
+func RemoveFromList[T any](s []T, index int) []T {
+	return append(s[:index], s[index+1:]...)
 }

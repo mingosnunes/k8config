@@ -48,6 +48,8 @@ The system files will be localted on the $HOME/.k8config directory (created if n
 				utils.PrintInfo("Kubernetes configuration directory not found. Installing...")
 
 				os.Mkdir(homePath+"/.k8config/configs", os.ModePerm)
+			case 4:
+				utils.PrintWaring("Add this line to your .profile/.bashrc/.zshrc file and source it:\n\texport KUBECONFIG=$HOME/.k8config/actual")
 			}
 		}
 

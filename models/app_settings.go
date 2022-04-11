@@ -45,6 +45,43 @@ func (settings *AppSettings) AddConfig(newConfig K8sConfig) bool {
 	return true
 }
 
+func (settings *AppSettings) DelConfigs(configsSelected []string) {
+
+	for index, config := range settings.ConfigList {
+		for _, selected := range configsSelected {
+			if config.Name == selected {
+				settings.ConfigList = utils.RemoveFromList(settings.ConfigList, index)
+				os.Remove(config.Location)
+			}
+		}
+	}
+
+	settings.SaveFile()
+}
+
+func (settings *AppSettings) UseConfig(configName string) {
+
+	for _, config := range settings.ConfigList {
+
+		if config.Name == configName {
+			bytesRead, err := os.ReadFile(config.Location)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			err = os.WriteFile(utils.ActualConfigPath, bytesRead, 0644)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			settings.CurrentConfig = config
+
+			settings.SaveFile()
+		}
+	}
+
+}
+
 func (settings *AppSettings) SaveFile() {
 
 	prevSettings := GetSettings()
