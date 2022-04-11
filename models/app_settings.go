@@ -2,10 +2,11 @@ package models
 
 import (
 	"encoding/json"
-	"k8config/utils"
 	"log"
 	"os"
 	"time"
+
+	"github.com/mingosnunes/k8config/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 )

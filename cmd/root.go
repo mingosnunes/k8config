@@ -5,8 +5,9 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"k8config/utils"
 	"os"
+
+	"github.com/mingosnunes/k8config/utils"
 
 	"github.com/spf13/cobra"
 )

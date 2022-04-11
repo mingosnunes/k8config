@@ -5,11 +5,12 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"k8config/models"
-	"k8config/utils"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/mingosnunes/k8config/models"
+	"github.com/mingosnunes/k8config/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"

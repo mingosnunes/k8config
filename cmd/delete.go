@@ -6,9 +6,10 @@ package cmd
 
 import (
 	"fmt"
-	"k8config/models"
-	"k8config/utils"
 	"os"
+
+	"github.com/mingosnunes/k8config/models"
+	"github.com/mingosnunes/k8config/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"

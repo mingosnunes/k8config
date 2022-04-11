@@ -1,10 +1,9 @@
-module k8config
+module github.com/mingosnunes/k8config
 
 go 1.18
 
-require github.com/AlecAivazis/survey/v2 v2.3.4
-
 require (
+	github.com/AlecAivazis/survey/v2 v2.3.4
 	github.com/fatih/color v1.13.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
