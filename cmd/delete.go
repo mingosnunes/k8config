@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/mingosnunes/k8config/models"
@@ -44,7 +45,11 @@ Kubernetes configuratio file will be removed from your system`,
 			Options: options,
 		}
 
-		survey.AskOne(prompt, &configs2remove)
+		err := survey.AskOne(prompt, &configs2remove)
+
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
 
 		if len(configs2remove) == 0 {
 			fmt.Println()

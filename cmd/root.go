@@ -5,12 +5,16 @@ Copyright © 2022 Domingos Nunes mingosnunes94@gmail.com
 package cmd
 
 import (
-	"os"
+	"errors"
 
 	"github.com/mingosnunes/k8config/utils"
 
 	"github.com/spf13/cobra"
 )
+
+// variables to use on tests
+var checkInstallation = utils.CheckInstallation
+var checks []int
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -19,23 +23,24 @@ var rootCmd = &cobra.Command{
 	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cmd.Help()
+	},
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		checks = checkInstallation()
 
-		check := utils.CheckInstallation()
-
-		if len(check) > 0 {
-			utils.PrintRed.Println("\n\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
+		if len(checks) > 0 {
+			return errors.New("⚠️ k8config is not installed correctly. Run ➡️ k8config install")
 		}
+
+		return nil
 	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
+func Execute() error {
+	return rootCmd.Execute()
 }
 
 func init() {

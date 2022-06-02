@@ -97,7 +97,11 @@ func (settings *AppSettings) SaveFile() {
 			Message: "Settings file change in the meantime. Override?",
 			Default: true,
 		}
-		survey.AskOne(prompt, &override)
+		err := survey.AskOne(prompt, &override)
+
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
 
 		if !override {
 			return

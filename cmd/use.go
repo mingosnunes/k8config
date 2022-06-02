@@ -5,6 +5,7 @@ Copyright © 2022 Domingos Nunes mingosnunes94@gmail.com
 package cmd
 
 import (
+	"log"
 	"os"
 
 	"github.com/mingosnunes/k8config/models"
@@ -42,7 +43,11 @@ var useCmd = &cobra.Command{
 			Options: options,
 		}
 
-		survey.AskOne(prompt, &config)
+		err := survey.AskOne(prompt, &config)
+
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
 
 		settings.UseConfig(config)
 

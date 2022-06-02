@@ -5,6 +5,7 @@ Copyright © 2022 Domingos Nunes mingosnunes94@gmail.com
 package cmd
 
 import (
+	"log"
 	"os"
 
 	"github.com/mingosnunes/k8config/models"
@@ -35,11 +36,19 @@ The system files will be localted on the $HOME/.k8config directory (created if n
 			case 1:
 				utils.PrintInfo("Installing...")
 
-				os.Mkdir(homePath+"/.k8config", os.ModePerm)
+				err := os.Mkdir(homePath+"/.k8config", os.ModePerm)
+
+				if err != nil {
+					log.Fatalln(err.Error())
+				}
 
 				models.CreateSettings()
 
-				os.Mkdir(homePath+"/.k8config/configs", os.ModePerm)
+				err = os.Mkdir(homePath+"/.k8config/configs", os.ModePerm)
+
+				if err != nil {
+					log.Fatalln(err.Error())
+				}
 
 			case 2:
 				utils.PrintInfo("Settings file not found. Installing...")
@@ -48,7 +57,11 @@ The system files will be localted on the $HOME/.k8config directory (created if n
 			case 3:
 				utils.PrintInfo("Kubernetes configuration directory not found. Installing...")
 
-				os.Mkdir(homePath+"/.k8config/configs", os.ModePerm)
+				err := os.Mkdir(homePath+"/.k8config/configs", os.ModePerm)
+
+				if err != nil {
+					log.Fatalln(err.Error())
+				}
 			case 4:
 				utils.PrintWaring("Add this line to your .profile/.bashrc/.zshrc file and source it:\n\texport KUBECONFIG=$HOME/.k8config/actual")
 			}
