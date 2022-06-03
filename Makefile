@@ -10,8 +10,14 @@ run:
 test: 
 	go test ./...
 
+build: 
+	go build ./...
+
 test-debug:
 	go test ./... -v
 
 test-cov:
 	go test ./... -cover
+
+multi-build:
+	./scripts/multi-build.bash
