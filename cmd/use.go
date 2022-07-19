@@ -5,9 +5,6 @@ Copyright © 2022 Domingos Nunes mingosnunes94@gmail.com
 package cmd
 
 import (
-	"log"
-	"os"
-
 	"github.com/mingosnunes/k8config/models"
 	"github.com/mingosnunes/k8config/utils"
 
@@ -15,25 +12,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	useGetSettings  = models.GetSettings
+	useSurveyAskOne = survey.AskOne
+)
+
 // useCmd represents the use command
 var useCmd = &cobra.Command{
 	Use:   "use",
 	Short: "Change the active Kubernetes configuration file",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
-		checks := utils.CheckInstallation()
+		settings, err := useGetSettings()
 
-		if len(checks) > 0 {
-			utils.PrintRed.Println("\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
-			os.Exit(1)
+		if err != nil {
+			return err
 		}
-
-		settings := models.GetSettings()
 
 		options := make([]string, 0)
 
-		for _, c := range settings.ConfigList {
+		for _, c := range settings.GetConfigList() {
 			options = append(options, c.Name)
 		}
 
@@ -43,15 +42,21 @@ var useCmd = &cobra.Command{
 			Options: options,
 		}
 
-		err := survey.AskOne(prompt, &config)
+		err = useSurveyAskOne(prompt, &config)
 
 		if err != nil {
-			log.Fatalln(err.Error())
+			return err
 		}
 
-		settings.UseConfig(config)
+		err = settings.UseConfig(config)
+
+		if err != nil {
+			return err
+		}
 
 		utils.PrintSuccess("All done!")
+
+		return nil
 	},
 }
 

@@ -6,7 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/mingosnunes/k8config/models"
 	"github.com/mingosnunes/k8config/utils"
@@ -14,26 +13,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	listGetSettings = models.GetSettings
+)
+
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all available kubernetes configuration files",
 	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		checks := utils.CheckInstallation()
+	RunE: func(cmd *cobra.Command, args []string) error {
 
-		if len(checks) > 0 {
-			utils.PrintRed.Println("\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
-			os.Exit(1)
+		settings, err := listGetSettings()
+
+		if err != nil {
+			return err
 		}
-
-		settings := models.GetSettings()
 
 		utils.PrintInfo("Available Kubernetes configs:")
 
-		for _, config := range settings.ConfigList {
+		for _, config := range settings.GetConfigList() {
 			fmt.Println("\t" + config.Name + " (" + config.Location + ")")
 		}
+
+		return nil
 	},
 }
 

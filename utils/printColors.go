@@ -4,7 +4,11 @@ Copyright © 2022 Domingos Nunes mingosnunes94@gmail.com
 */
 package utils
 
-import "github.com/fatih/color"
+import (
+	"fmt"
+
+	"github.com/fatih/color"
+)
 
 var PrintYellow *color.Color = color.New(color.FgHiYellow)
 var PrintRed *color.Color = color.New(color.FgHiRed)
@@ -23,5 +27,9 @@ func PrintError(text string) {
 }
 
 func PrintInfo(text string) {
-	println("ℹ️ " + text)
+	fmt.Println("ℹ️ " + text)
+}
+
+func PrintDebug(text string) {
+	fmt.Println("[DEBUG]", text)
 }

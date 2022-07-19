@@ -12,9 +12,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// variables to use on tests
-var checkInstallation = utils.CheckInstallation
-var checks []int
+var (
+	// variables to use on tests
+	checkInstallation = utils.CheckInstallation
+	checks            []int
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -24,14 +26,16 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return cmd.Help()
-	},
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		checks = checkInstallation()
 
 		if len(checks) > 0 {
 			return errors.New("⚠️ k8config is not installed correctly. Run ➡️ k8config install")
 		}
+
+		return cmd.Help()
+	},
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		cmd.Context()
+		checks = checkInstallation()
 
 		return nil
 	},

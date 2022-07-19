@@ -6,6 +6,7 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"os"
 	"time"
@@ -15,14 +16,37 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 )
 
+type IAppSettings interface {
+	CheckConfigName(name string) bool
+	AddConfig(newConfig K8sConfig) bool
+	DelConfigs(configsSelected []string)
+	UseConfig(configName string) error
+	SaveFile() error
+	GetConfigList() []K8sConfig
+	GetUpdatedAt() time.Time
+	GetCurrentConfig() K8sConfig
+}
+
 type AppSettings struct {
 	CurrentConfig K8sConfig   `json:"current"`
-	ConfigList    []K8sConfig `json:"configs"`
 	UpdatedAt     time.Time   `json:"updatedAt"`
+	ConfigList    []K8sConfig `json:"configs"`
 }
 
 func NewAppSettings() AppSettings {
-	return AppSettings{K8sConfig{}, make([]K8sConfig, 0), time.Now()}
+	return AppSettings{K8sConfig{}, time.Now(), make([]K8sConfig, 0)}
+}
+
+func (settings *AppSettings) GetCurrentConfig() K8sConfig {
+	return settings.CurrentConfig
+}
+
+func (settings *AppSettings) GetConfigList() []K8sConfig {
+	return settings.ConfigList
+}
+
+func (settings *AppSettings) GetUpdatedAt() time.Time {
+	return settings.UpdatedAt
 }
 
 func (settings *AppSettings) CheckConfigName(name string) bool {
@@ -64,7 +88,7 @@ func (settings *AppSettings) DelConfigs(configsSelected []string) {
 	settings.SaveFile()
 }
 
-func (settings *AppSettings) UseConfig(configName string) {
+func (settings *AppSettings) UseConfig(configName string) error {
 
 	for _, config := range settings.ConfigList {
 
@@ -85,13 +109,19 @@ func (settings *AppSettings) UseConfig(configName string) {
 		}
 	}
 
+	return nil
+
 }
 
-func (settings *AppSettings) SaveFile() {
+func (settings *AppSettings) SaveFile() error {
 
-	prevSettings := GetSettings()
+	prevSettings, err := GetSettings()
 
-	if prevSettings.UpdatedAt != settings.UpdatedAt {
+	if err != nil {
+		return err
+	}
+
+	if prevSettings.GetUpdatedAt() != settings.GetUpdatedAt() {
 		override := false
 		prompt := &survey.Confirm{
 			Message: "Settings file change in the meantime. Override?",
@@ -100,11 +130,11 @@ func (settings *AppSettings) SaveFile() {
 		err := survey.AskOne(prompt, &override)
 
 		if err != nil {
-			log.Fatalln(err.Error())
+			return err
 		}
 
 		if !override {
-			return
+			return nil
 		}
 	}
 
@@ -115,27 +145,27 @@ func (settings *AppSettings) SaveFile() {
 	errWriteFile := os.WriteFile(utils.SettingsPath, file, 0644)
 
 	if errWriteFile != nil {
-		log.Fatalln("Error: ", errWriteFile.Error())
+		return err
 	}
+
+	return nil
 }
 
-func CreateSettings() {
+func CreateSettings() error {
 	settings := NewAppSettings()
 
 	file, _ := json.MarshalIndent(settings, "", " ")
 
 	errWriteFile := os.WriteFile(utils.SettingsPath, file, 0644)
 
-	if errWriteFile != nil {
-		log.Fatalln("Error: ", errWriteFile.Error())
-	}
+	return errWriteFile
 }
 
-func GetSettings() AppSettings {
+func GetSettings() (IAppSettings, error) {
 	bytesRead, err := os.ReadFile(utils.SettingsPath)
 
 	if err != nil {
-		log.Fatal("Settings file reading failed.")
+		return &AppSettings{}, errors.New("Settings file reading failed.")
 	}
 
 	var tempSettings AppSettings
@@ -143,8 +173,8 @@ func GetSettings() AppSettings {
 	err = json.Unmarshal(bytesRead, &tempSettings)
 
 	if err != nil {
-		log.Fatal("Settings file decoding failed.")
+		return &AppSettings{}, errors.New("Settings file decoding failed.")
 	}
 
-	return tempSettings
+	return &tempSettings, nil
 }

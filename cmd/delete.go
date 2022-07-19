@@ -6,8 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"os"
 
 	"github.com/mingosnunes/k8config/models"
 	"github.com/mingosnunes/k8config/utils"
@@ -23,19 +21,17 @@ var deleteCmd = &cobra.Command{
 	Long: `Delete kubernetes configuration file.
 
 Kubernetes configuratio file will be removed from your system`,
-	Run: func(cmd *cobra.Command, args []string) {
-		checks := utils.CheckInstallation()
+	RunE: func(cmd *cobra.Command, args []string) error {
 
-		if len(checks) > 0 {
-			utils.PrintRed.Println("\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
-			os.Exit(1)
+		settings, err := models.GetSettings()
+
+		if err != nil {
+			return err
 		}
-
-		settings := models.GetSettings()
 
 		options := make([]string, 0)
 
-		for _, c := range settings.ConfigList {
+		for _, c := range settings.GetConfigList() {
 			options = append(options, c.Name)
 		}
 
@@ -45,21 +41,23 @@ Kubernetes configuratio file will be removed from your system`,
 			Options: options,
 		}
 
-		err := survey.AskOne(prompt, &configs2remove)
+		err = survey.AskOne(prompt, &configs2remove)
 
 		if err != nil {
-			log.Fatalln(err.Error())
+			return nil
 		}
 
 		if len(configs2remove) == 0 {
 			fmt.Println()
 			utils.PrintWaring("No config selected... 🙄")
-			os.Exit(0)
+			return nil
 		}
 
 		settings.DelConfigs(configs2remove)
 
 		utils.PrintSuccess("All configs removed")
+
+		return nil
 	},
 }
 

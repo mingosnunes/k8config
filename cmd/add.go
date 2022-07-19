@@ -23,18 +23,18 @@ var addCmd = &cobra.Command{
 	Long: `Add kubernetes configuration file.
 
 Kubernetes configuratio file will be added to the list of available configs`,
-	Run: func(cmd *cobra.Command, args []string) {
-		checks := utils.CheckInstallation()
+	RunE: func(cmd *cobra.Command, args []string) error {
+		// checks := utils.CheckInstallation()
 
-		if len(checks) > 0 {
-			utils.PrintRed.Println("\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
-			os.Exit(1)
-		}
+		// if len(checks) > 0 {
+		// 	utils.PrintRed.Println("\n⚠️ k8config is not installed correctly. Run ➡️ k8config install")
+		// 	os.Exit(1)
+		// }
 
-		if len(args) != 1 {
-			utils.PrintWaring("Add the config path as argument: k8config add <path>")
-			os.Exit(1)
-		}
+		// if len(args) != 1 {
+		// 	utils.PrintWaring("Add the config path as argument: k8config add <path>")
+		// 	os.Exit(1)
+		// }
 
 		//copy config to configs' dir
 
@@ -47,10 +47,14 @@ Kubernetes configuratio file will be added to the list of available configs`,
 		bytesRead, err := os.ReadFile(src)
 
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
-		settings := models.GetSettings()
+		settings, err := models.GetSettings()
+
+		if err != nil {
+			return err
+		}
 
 		fileName2Save := ""
 		dest := ""
@@ -85,7 +89,7 @@ Kubernetes configuratio file will be added to the list of available configs`,
 				// create config copy
 				err = os.WriteFile(dest, bytesRead, 0644)
 				if err != nil {
-					log.Fatal(err)
+					return err
 				}
 
 				break
@@ -102,6 +106,8 @@ Kubernetes configuratio file will be added to the list of available configs`,
 		settings.AddConfig(config)
 
 		utils.PrintSuccess(" This configuration file is mine now! 😎")
+
+		return nil
 
 	},
 }

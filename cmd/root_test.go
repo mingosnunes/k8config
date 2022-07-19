@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -55,13 +56,9 @@ func TestRoot(t *testing.T) {
 			func(t *testing.T) {
 				checkInstallation = test.CheckInstallationList
 
-				_, _, err := executeCmd(rootCmd)
+				_, output, err := executeCmd(rootCmd)
 
-				// t.Log("CMD", cmd)
-				// t.Log("OUTPUT", output)
-
-				t.Log(err)
-				t.Log()
+				fmt.Println(output)
 				if err != nil {
 					if !test.expectsErr {
 						t.Error("Expected not error and got error")
