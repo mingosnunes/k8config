@@ -17,7 +17,7 @@ test-debug:
 	go test ./... -v
 
 test-cov:
-	go test ./... -cover
+	go test ./... -coverprofile=coverage.txt -covermode=atomic -race
 
 multi-build:
 	./scripts/multi-build.bash

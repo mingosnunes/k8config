@@ -1,6 +1,6 @@
 
 
-name: ci-workflow
+name: Tests
 on: [push]
 jobs:
   lint:
@@ -72,4 +72,23 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - run: make test
+      - run: make test  
+  test-cov:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.x'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - run: make test-cov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3

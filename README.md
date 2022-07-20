@@ -1,4 +1,3 @@
-<div id="top"></div>
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
 *** that would make this better, please fork the repo and create a pull request
@@ -49,6 +48,23 @@
   </p>
 </div>
 
+<div align="center">
+    <a href="https://github.com/mingosnunes/k8config/releases">
+        <img src="https://img.shields.io/github/release/mingosnunes/k8config.svg?style=flat" alt="Releases" />
+    </a>
+    <a href="https://github.com/mingosnunes/k8config/actions">
+        <img src="https://github.com/mingosnunes/k8config/actions/workflows/ci.yml/badge.svg" alt="Build Status" />
+    </a>
+    <a href="https://github.com/mingosnunes/k8config/blob/main/LICENSE">
+        <img src="https://img.shields.io/github/license/mingosnunes/k8config.svg" alt="GPL 3.0" />
+    </a>
+    <a href="https://codecov.io/gh/mingosnunes/k8config">
+        <img src="https://codecov.io/gh/mingosnunes/k8config/branch/main/graph/badge.svg" alt="Coverage" />
+    </a>
+    <a href="https://goreportcard.com/report/github.com/mingosnunes/k8config">
+        <img src="https://goreportcard.com/badge/github.com/mingosnunes/k8config" alt="Go Report Card" />
+    </a>
+</div>
 
 
 <!-- TABLE OF CONTENTS -->
@@ -188,7 +204,7 @@ Distributed under the GNU GENERAL PUBLIC LICENSE v3 License. See `LICENSE.txt` f
 <!-- CONTACT -->
 ## Contact
 
-Domingos Nunes - [@LinkedIn](https://www.linkedin.com/in/domingosfilipenunes/) - mingosnunes@gmail.com
+Domingos Nunes - [@LinkedIn](https://www.linkedin.com/in/domingosfilipenunes/) - mingosnunes94@gmail.com
 
 <!-- Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name) -->
 
