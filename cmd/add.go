@@ -103,7 +103,11 @@ Kubernetes configuratio file will be added to the list of available configs`,
 
 		config := models.NewK8sConfig(fileName2Save, dest)
 
-		settings.AddConfig(config)
+		err = settings.AddConfig(config)
+
+		if err != nil {
+			return err
+		}
 
 		utils.PrintSuccess(" This configuration file is mine now! 😎")
 

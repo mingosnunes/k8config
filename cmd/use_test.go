@@ -36,9 +36,9 @@ func (m *MockAppSettings) SaveFile() error {
 	return err.Error(0)
 }
 
-func (m *MockAppSettings) AddConfig(newConfig models.K8sConfig) bool {
+func (m *MockAppSettings) AddConfig(newConfig models.K8sConfig) error {
 	args := m.Called(newConfig)
-	return args.Bool(0)
+	return args.Error(0)
 }
 
 func (m *MockAppSettings) CheckConfigName(name string) bool {
@@ -46,7 +46,9 @@ func (m *MockAppSettings) CheckConfigName(name string) bool {
 	return args.Bool(0)
 }
 
-func (m *MockAppSettings) DelConfigs(configsSelected []string) {
+func (m *MockAppSettings) DelConfigs(configsSelected []string) error {
+	args := m.Called()
+	return args.Error(0)
 }
 
 func (settings *MockAppSettings) GetUpdatedAt() time.Time {

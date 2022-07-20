@@ -7,7 +7,6 @@ package models
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"os"
 	"time"
 
@@ -18,8 +17,8 @@ import (
 
 type IAppSettings interface {
 	CheckConfigName(name string) bool
-	AddConfig(newConfig K8sConfig) bool
-	DelConfigs(configsSelected []string)
+	AddConfig(newConfig K8sConfig) error
+	DelConfigs(configsSelected []string) error
 	UseConfig(configName string) error
 	SaveFile() error
 	GetConfigList() []K8sConfig
@@ -59,33 +58,47 @@ func (settings *AppSettings) CheckConfigName(name string) bool {
 	return true
 }
 
-func (settings *AppSettings) AddConfig(newConfig K8sConfig) bool {
+func (settings *AppSettings) AddConfig(newConfig K8sConfig) error {
 
 	for _, config := range settings.ConfigList {
 		if config.Name == newConfig.Name {
-			return false
+			return errors.New("Config name already used")
 		}
 	}
 
 	settings.ConfigList = append(settings.ConfigList, newConfig)
 
-	settings.SaveFile()
+	err := settings.SaveFile()
 
-	return true
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (settings *AppSettings) DelConfigs(configsSelected []string) {
+func (settings *AppSettings) DelConfigs(configsSelected []string) error {
 
 	for index, config := range settings.ConfigList {
 		for _, selected := range configsSelected {
 			if config.Name == selected {
 				settings.ConfigList = utils.RemoveFromList(settings.ConfigList, index)
-				os.Remove(config.Location)
+				err := os.Remove(config.Location)
+
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
 
-	settings.SaveFile()
+	err := settings.SaveFile()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (settings *AppSettings) UseConfig(configName string) error {
@@ -95,17 +108,21 @@ func (settings *AppSettings) UseConfig(configName string) error {
 		if config.Name == configName {
 			bytesRead, err := os.ReadFile(config.Location)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			err = os.WriteFile(utils.ActualConfigPath, bytesRead, 0644)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			settings.CurrentConfig = config
 
-			settings.SaveFile()
+			err = settings.SaveFile()
+
+			if err != nil {
+				return err
+			}
 		}
 	}
 

@@ -53,7 +53,11 @@ Kubernetes configuratio file will be removed from your system`,
 			return nil
 		}
 
-		settings.DelConfigs(configs2remove)
+		err = settings.DelConfigs(configs2remove)
+
+		if err != nil {
+			return err
+		}
 
 		utils.PrintSuccess("All configs removed")
 
